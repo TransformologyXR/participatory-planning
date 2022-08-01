@@ -29,7 +29,7 @@ const BUILDING_FLOOR_HEIGHT = 3;
 export default class CreateBuilding extends DrawWidget {
 
   @property()
-  private stories: number;
+  private color: string;
 
   public postInitialize() {
     this.layer.elevationInfo = {
@@ -43,17 +43,18 @@ export default class CreateBuilding extends DrawWidget {
     return (
       <div>
         <div class="menu">
+          Stories
           <select class="menu-item" id='selectStories'>
-          {Array.from(Array(20), (_, index) => index + 1).map((i)=> (
+          {Array.from(Array(200), (_, index) => index + 1).map((i)=> (
             <option>{i}</option>
           ))}
           </select>
           {
-          ['green', 'blue', 'yellow'].map((color) => (
+          [{color:'green', label: 'Residential'}, {color:'blue', label: 'Commercial'}, {color:'yellow', label: "Mixed"}].map((buildingType) => (
             <div class="menu-item">
               <button
-                class={true ? active : inactive}
-                onclick={ this.startDrawing.bind(this, color) }>{color} Building</button>
+                class={this.color === buildingType.color? active : inactive}
+                onclick={ this.startDrawing.bind(this, buildingType.color) }>{buildingType.label} Building</button>
             </div>
           )) }
         </div>
@@ -87,11 +88,11 @@ export default class CreateBuilding extends DrawWidget {
     });
 
     this.createPolygonGraphic(symbol, color).finally(() => {
-      this.stories = 0;
+      this.color = '';
     }).catch(() => {
       // Ignore
     });
-    this.stories = stories;
+    this.color = buildingColor;
   }
 
 }
