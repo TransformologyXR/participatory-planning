@@ -43,11 +43,17 @@ export default class CreateBuilding extends DrawWidget {
     return (
       <div>
         <div class="menu">
-          { [3, 5, 10].map((stories) => (
+          <select class="menu-item" id='selectStories'>
+          {Array.from(Array(20), (_, index) => index + 1).map((i)=> (
+            <option>{i}</option>
+          ))}
+          </select>
+          {
+          ['green', 'blue', 'yellow'].map((color) => (
             <div class="menu-item">
               <button
-                class={stories === this.stories ? active : inactive}
-                onclick={ this.startDrawing.bind(this, stories) }>{stories}-Story Building</button>
+                class={true ? active : inactive}
+                onclick={ this.startDrawing.bind(this, color) }>{color} Building</button>
             </div>
           )) }
         </div>
@@ -59,10 +65,12 @@ export default class CreateBuilding extends DrawWidget {
     return this.updatePolygonGraphic(graphic, BUILDING_COLOR);
   }
 
-  private startDrawing(stories: number) {
+  private startDrawing(buildingColor:string) {
 
-    const size = stories * BUILDING_FLOOR_HEIGHT;
-    const color = BUILDING_COLOR;
+    var selectedStories = document.getElementById('selectStories') as HTMLSelectElement;
+
+    const size = (selectedStories.selectedIndex+1) * BUILDING_FLOOR_HEIGHT;
+    const color = buildingColor;
 
     const symbol = new PolygonSymbol3D({
       symbolLayers: [{
