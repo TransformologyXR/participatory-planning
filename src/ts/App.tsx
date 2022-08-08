@@ -87,6 +87,10 @@ export default class App extends WidgetBase {
 
   private mainMenuEntries: MainMenu[] = [];
 
+  private createMenu: MainMenu[] = [];
+
+  private placeMenu: MainMenu[] = [];
+
   private menuButtons: HTMLElement[] = [];
 
   private operation: Operation | null;
@@ -114,38 +118,52 @@ export default class App extends WidgetBase {
       }
     });
 
-    this.mainMenuEntries.push({
+    this.createMenu.push({
       label: "Ground",
       iconName: "fas fa-layer-group",
       onClick: this.showWidget.bind(this, this.createArea),
     });
-    this.mainMenuEntries.push({
+    this.createMenu.push({
       label: "Paths",
       iconName: "fas fa-road",
       onClick: this.showWidget.bind(this, this.createPath),
     });
-    this.mainMenuEntries.push({
+    this.createMenu.push({
       label: "Buildings",
       iconName: "fas fa-building",
       onClick: this.showWidget.bind(this, this.createBuilding),
     });
-    this.mainMenuEntries.push({
+
+
+    this.placeMenu.push({
       label: "Icons",
       iconName: "fas fa-map-marker-alt",
       onClick: this.showSymbolGallery.bind(this, SymbolGroupId.Icons),
     });
-    this.mainMenuEntries.push({
+    this.placeMenu.push({
       label: "Trees",
       iconName: "fas fa-tree",
       onClick: this.showSymbolGallery.bind(this, SymbolGroupId.Trees),
     });
-    this.mainMenuEntries.push({
+    this.placeMenu.push({
       label: "Vehicles",
       iconName: "fas fa-car",
       onClick: this.showSymbolGallery.bind(this, SymbolGroupId.Vehicles),
     });
+
+
     this.mainMenuEntries.push({
-      label: "glTF",
+      label: "Draw",
+      iconName: "fas fa-layer-group",
+      onClick: this.showSubMenu.bind(this, 'draw'),
+    });
+    this.mainMenuEntries.push({
+      label: "Place",
+      iconName: "fas fa-map-marker-alt",
+      onClick: this.showSubMenu.bind(this, 'place'),
+    });
+    this.mainMenuEntries.push({
+      label: "import glTF",
       iconName: "fas fa-cloud-download-alt",
       onClick: (element) => {
         this.glTFWidget.startImport();
@@ -185,6 +203,37 @@ export default class App extends WidgetBase {
           </div>
           <div class="bottom">
             <div class="menu">
+              <div class="content">
+                <div id='draw' class="hide submenu">
+                  <div class="menu">
+                  {
+                    this.createMenu.map((entry) => (
+                      <div class="menu-item">
+                        <button class="btn" afterCreate={ this.attachWidgetButton.bind(this, entry) }>
+                          <span class={ "font-size-3 " + entry.iconName } /><br />
+                          { entry.label }
+                        </button>
+                      </div>
+                    ))
+                  }
+                  </div>
+                </div>
+                <div id='place' class="hide submenu">
+                  <div class="menu">
+                  {
+                    this.placeMenu.map((entry) => (
+                      <div class="menu-item">
+                        <button class="btn" afterCreate={ this.attachWidgetButton.bind(this, entry) }>
+                          <span class={ "font-size-3 " + entry.iconName } /><br />
+                          { entry.label }
+                        </button>
+                      </div>
+                    ))
+                  }
+                  </div>
+                  
+                </div>
+              </div>
               <div class="menu-item">
                 <button class="btn btn-large" onclick={ () => { this.reset(); this.timeline.showIntro(); } }>
                   NEW PLAN
@@ -320,6 +369,27 @@ export default class App extends WidgetBase {
     (this.selectedWidget.container as HTMLElement).classList.remove("hide");
   }
 
+  private showSubMenu(id : string) {
+    this.menuButtons.forEach((button) => button.classList.remove("active"));
+    var elementsToHide = document.getElementsByClassName("submenu") as HTMLCollectionOf<Element>;
+    var element = document.getElementById(id) as HTMLElement;
+    for (let index = 0; index < elementsToHide.length; index++) {
+      if(elementsToHide[index] === element) continue;
+      elementsToHide[index].classList.remove("active");
+      elementsToHide[index].classList.add("hide");
+    }
+    var element = document.getElementById(id) as HTMLElement;
+    if(element.classList.contains("active")){
+      element.classList.add("hide");
+      element.classList.remove("active");
+    }
+
+    else{
+      element.classList.add("active");
+      element.classList.remove("hide");
+    }
+  }
+
   private showSymbolGallery(groupId: SymbolGroupId, element: HTMLElement) {
     this.menuButtons.forEach((button) => button.classList.remove("active"));
     if (this.symbolGallery.selectedGroupId !== groupId) {
@@ -331,6 +401,8 @@ export default class App extends WidgetBase {
     }
     this.showWidget(this.symbolGallery, element);
   }
+
+
 
   private updateGraphic(graphic: Graphic): boolean {
     const layer = graphic.layer as GraphicsLayer;
