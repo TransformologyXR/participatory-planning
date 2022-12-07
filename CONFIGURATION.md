@@ -19,7 +19,7 @@ The settings parameter is expected to be a URL pointing to JSON file with the fo
     [-8235919.081131686, 4968836.806196137]
   ],
   "planningAreaName": "Dumbo, Brooklyn NY",
-  "webSceneId": "cb405ff8ea6c48af9ff5258462218444"
+  "webSceneId": "bceae470c9a04e5bb3ad42323c726c97"
 }
 ```
 
